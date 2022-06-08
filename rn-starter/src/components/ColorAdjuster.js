@@ -1,7 +1,5 @@
 import React from 'react';
 import { Text, StyleSheet, View, Button } from 'react-native';
-import ImageDetail from '../components/ImageDetail';
-import { COLOR_INCREMENT } from '../screens/SquareScreen';
 
 const ColorAdjuster = ({ title, color, onIncrease, onDecrease, increaseDisabled, decreaseDisabled }) => {
   return (
