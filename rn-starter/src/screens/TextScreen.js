@@ -3,22 +3,22 @@ import { Text, StyleSheet, View, TextInput } from 'react-native';
 import ImageDetail from '../components/ImageDetail';
 
 const TextScreen = () => {
-  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
   
   return (
     <View>
       <Text>Enter password:</Text>
       <TextInput 
         style={styles.input}
-        value={name}
+        value={password}
         autoCapitalize='none'
         autoCorrect={false}
         onChangeText={(newText) => {
-          setName(newText);
+          setPassword(newText);
         }}
       />
-      {name.length < 5 && (
-        <Text>Your password must be at least 5 chars</Text>
+      {password.length < 4 && (
+        <Text>Your password must be at least 4 chars</Text>
       )}
     </View>
   );
