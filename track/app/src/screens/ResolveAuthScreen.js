@@ -2,14 +2,21 @@ import React, { useEffect, useContext } from 'react';
 import { Context as AuthContext } from '../context/AuthContext';
 
 const ResolveAuthScreen = ({ navigation }) => {
-  const { tryLocalSignin } = useContext(AuthContext);
+  const { state, tryLocalSignin } = useContext(AuthContext);
 
   useEffect(() => {
-    tryLocalSignin(
-      () => navigation.navigate('Signin'),
-      () => navigation.navigate('Account'),
-    );
+    tryLocalSignin();
   }, []);
+
+  const { token } = state;
+
+  useEffect(() => {
+    if (!!token) {
+      navigation.navigate('LoggedIn');
+    } else {
+      navigation.navigate('LoggedOut');
+    }
+  }, [token]);
 
   return (
     <></>
@@ -17,6 +24,3 @@ const ResolveAuthScreen = ({ navigation }) => {
 }
 
 export default ResolveAuthScreen;
-
-
-

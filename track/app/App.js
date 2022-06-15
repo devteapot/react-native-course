@@ -1,5 +1,4 @@
-import React, { useContext, useEffect } from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useContext } from 'react';
 import AccountScreen from './src/screens/AccountScreen';
 import SigninScreen from './src/screens/SigninScreen';
 import SignupScreen from './src/screens/SignupScreen';
@@ -8,12 +7,15 @@ import TrackDetailScreen from './src/screens/TrackDetailScreen';
 import TrackListScreen from './src/screens/TrackListScreen';
 import ResolveAuthScreen from './src/screens/ResolveAuthScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { ThemeProvider } from '@rneui/themed';
 import { Provider as AuthProvider, Context as AuthContext } from './src/context/AuthContext';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Provider as LocationProvider } from './src/context/LocationContext';
 
-
+const SwitchStack = createStackNavigator();
 const MainTab = createBottomTabNavigator();
 const LoginStack = createNativeStackNavigator();
 const TrackStack = createNativeStackNavigator();
@@ -27,43 +29,54 @@ const TrackListFlow = () => {
   );
 }
 
-const App = () => {
-  const { state, clearErrorMessage } = useContext(AuthContext);
+const LoggedInFlow = () => {
+  return (
+    <MainTab.Navigator 
+      screenOptions={{ headerShown: false }}
+    >
+      <MainTab.Screen name='TrackListFlow' component={TrackListFlow} />
+      <MainTab.Screen name='TrackCreate' component={TrackCreateScreen} />
+      <MainTab.Screen name='Account' component={AccountScreen} />
+    </MainTab.Navigator>
+  );
+}
+
+const LoggedOutFlow = () => {
+  const { clearErrorMessage } = useContext(AuthContext);
 
   return (
+    <LoginStack.Navigator 
+      screenOptions={{ headerShown: false }} 
+      screenListeners={{ focus: clearErrorMessage }}
+    >
+      <LoginStack.Screen name='Signin' component={SigninScreen} />
+      <LoginStack.Screen name='Signup' component={SignupScreen} />
+    </LoginStack.Navigator>
+  );
+}
+
+const App = () => {
+  return (
     <NavigationContainer>
-      {state.token !== null
-        ? (
-          <MainTab.Navigator>
-            <MainTab.Screen name='Account' component={AccountScreen} />
-            <MainTab.Screen name='TrackCreate' component={TrackCreateScreen} />
-            <MainTab.Screen name='TrackListFlow' component={TrackListFlow} />
-          </MainTab.Navigator>
-        ) : (
-          <LoginStack.Navigator 
-            screenOptions={{ headerShown: false }} 
-            screenListeners={{ focus: clearErrorMessage }}
-          >
-            <LoginStack.Screen name='ResolveAuth' component={ResolveAuthScreen} />
-            <LoginStack.Screen name='Signup' component={SignupScreen} />
-            <LoginStack.Screen name='Signin' component={SigninScreen} />
-          </LoginStack.Navigator>
-        )
-      }
+      <SwitchStack.Navigator screenOptions={{ headerShown: false, animationEnabled: false }}>
+        <SwitchStack.Screen name='ResolveAuth' component={ResolveAuthScreen} />
+        <SwitchStack.Screen name='LoggedIn' component={LoggedInFlow} />
+        <SwitchStack.Screen name='LoggedOut' component={LoggedOutFlow} />
+      </SwitchStack.Navigator>
     </NavigationContainer>
   );
 }
 
 export default () => {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <LocationProvider>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </LocationProvider>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-
-});
