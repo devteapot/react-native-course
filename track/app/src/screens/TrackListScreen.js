@@ -1,15 +1,30 @@
-import React from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import React, { useContext } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { Context as TrackContext } from '../context/TrackContext';
+import { ListItem } from '@rneui/themed';
 
 const TrackListScreen = ({ navigation }) => {
+  const { state } = useContext(TrackContext);
+
   return (
-    <View>
-      <Text>TrackList screen</Text>
-      <Button 
-        title='Go to TrackDetail' 
-        onPress={() => navigation.navigate('TrackDetail')} 
-      />
-    </View>
+    <FlatList
+      data={state}
+      keyExtractor={(item) => item._id}
+      renderItem={({ item }) => (
+        <TouchableOpacity 
+          onPress={() => {
+            navigation.navigate('TrackDetail', { _id: item._id })
+          }}
+        >
+          <ListItem>
+            <ListItem.Content>
+              <ListItem.Title>{item.name}</ListItem.Title>
+            </ListItem.Content>
+            <ListItem.Chevron />
+          </ListItem>
+        </TouchableOpacity>
+      )}
+    />
   );
 }
 
